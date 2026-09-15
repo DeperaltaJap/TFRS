@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "Tricycle Franchise and Registration System";
+}
+
+<div class="container-fluid p-0">
+
+    <!-- HEADER -->
+    <div class="header-top text-center">
+        <h1>SANGGUNIANG BAYAN OFFICE</h1>
+    </div>
+
+    <div class="header-title text-center">
+        <h2>TRICYCLE FRANCHISE AND REGISTRATION SYSTEM</h2>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="row g-4 main-body p-3">
+
+        <!-- LEFT side -->
+        <div class="col-lg-6">
+            <div class="menu-panel panel-box">
+
+                <a asp-controller="Application"
+                   asp-action="Index"
+                   class="menu-btn btn-blue">
+                    TF APPLICATION FORM
+                </a>
+
+                <a asp-controller="Franchise"
+                   asp-action="Certificate"
+                   class="menu-btn btn-darkblue">
+                    CERTIFICATE OF FRANCHISE
+                </a>
+
+                <a asp-controller="Records"
+                   asp-action="Index"
+                   class="menu-btn btn-lightblue">
+                    T.F. RECORDS
+                </a>
+
+            </div>
+
+            <h3 class="slogan">
+                Desire to Act Responsibly with Excellence
+            </h3>
+
+            <div class="association">
+                TRICYCLE OPERATOR AND DRIVERS ASSOCIATION
+                <br />
+                IN THE MUNICIPALITY OF NARRA
+            </div>
+
+            <div class="text-center mt-4">
+                <a asp-controller="Account"
+                   asp-action="Logout"
+                   class="logout-btn">
+                    LOGOUT
+                </a>
+            </div>
+        </div>
+
+
+
+            <!-- RIGHT -->
+            <div class="col-lg-6">
+                <div class="seal-container panel-box">
+
+                    <div class="w-100">
+
+                        <a asp-controller="Search"
+                           asp-action="Index"
+                           class="file-search-btn">
+                            FILE SEARCH
+                        </a>
+
+                        <a asp-controller="IDSystem"
+                           asp-action="Index"
+                           class="menu-btn btn-red">
+                            ID SYSTEM
+                        </a>
+
+                        <a asp-controller="Attendance"
+                           asp-action="Certificate"
+                           class="menu-btn btn-yellow">
+                            CERTIFICATE OF ATTENDANCE
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="designer">
+                    Designed and Developed by: The IT
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

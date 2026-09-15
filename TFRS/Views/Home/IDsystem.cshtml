@@ -1,0 +1,113 @@
+﻿@{
+    ViewData["Title"] = "T.O.D.A ID System";
+    Layout = null;
+}
+@* Namespace: TFRS.Views.Home.IDsystem *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/IDsystem.css" asp-append-version="true" />
+</head>
+<body class="toda-page">
+
+    <!-- ================= HEADER ================= -->
+    <div class="toda-header">
+        <div class="toda-header-left">
+            <h1>T.O.D.A</h1>
+            <h2>TRICYCLE OPERATORS AND DRIVERS ASSOCIATION ID SYSTEM</h2>
+        </div>
+
+        <div class="toda-header-search">
+            <div>
+                <label for="Keyword">KEYWORD</label><br />
+                <input type="text" id="Keyword" name="Keyword" class="toda-keyword-box" />
+            </div>
+            <button type="button" id="btnSearch" class="toda-search-btn">SEARCH</button>
+        </div>
+
+        <button type="button" id="btnBack" class="toda-back-btn">BACK</button>
+    </div>
+
+    <!-- ================= BODY ================= -->
+    <div class="toda-body">
+
+        <!-- Column 1: Franchise / Name / Address / Contact / Violation -->
+        <div class="toda-col">
+            <span class="toda-label">FRANCHISE NUMBER</span>
+            <div class="franchise-number-box">
+                <input type="text" id="FranchiseNumber" name="FranchiseNumber"
+                       style="background:transparent;border:none;width:100%;height:100%;color:#000;font-weight:700;padding-left:8px;" />
+            </div>
+
+            <span class="toda-label">FULL NAME:</span>
+            <input type="text" id="FullName" name="FullName" class="toda-input small" />
+
+            <span class="toda-label">ADDRESS:</span>
+            <textarea id="Address" name="Address" class="toda-input tall"></textarea>
+
+            <span class="toda-label">CONTACT NUMBER:</span>
+            <input type="text" id="ContactNumber" name="ContactNumber" class="toda-input small" />
+
+            <div class="violation-header">VIOLATION</div>
+            <textarea id="Violation" name="Violation" class="toda-input xtall"></textarea>
+        </div>
+
+        <!-- Column 2: TODA / Classification / Valid Until / QR Code -->
+        <div class="toda-col">
+            <span class="toda-label plain">TODA</span>
+            <input type="text" id="Toda" name="Toda" class="toda-input small" />
+
+            <span class="toda-label plain">CLASSIFICATION</span>
+            <input type="text" id="Classification" name="Classification" class="toda-input small" />
+
+            <span class="toda-label plain">VALID UNTIL</span>
+            <input type="text" id="ValidUntil" name="ValidUntil" class="toda-input small" />
+
+            <span class="toda-label plain">QR CODE</span>
+            <div class="toda-qr-row">
+                <div class="toda-qr-box" id="QrCodeBox"></div>
+                <div class="year-renew-wrap">
+                    <span class="toda-label plain" style="display:block;text-align:center;">YEAR RENEW</span>
+                    <input type="text" id="YearRenew" name="YearRenew" class="toda-input small" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 3: three blank fields + Remarks -->
+        <div class="toda-col">
+            <input type="text" id="Field1" name="Field1" class="toda-input small" />
+            <input type="text" id="Field2" name="Field2" class="toda-input small" />
+            <input type="text" id="Field3" name="Field3" class="toda-input small" />
+
+            <span class="toda-label brown">REMARKS</span>
+            <textarea id="Remarks" name="Remarks" class="toda-input xtall" style="height:230px;"></textarea>
+        </div>
+
+        <!-- Column 4: Picture + navigation -->
+        <div class="toda-col">
+            <div class="toda-picture-box" id="PictureBox"></div>
+            <span class="toda-picture-label">PICTURE</span>
+
+            <div class="toda-nav-buttons">
+                <button type="button" id="btnPrevious" class="toda-nav-btn">PREVIOUS</button>
+                <button type="button" id="btnNext" class="toda-nav-btn">NEXT</button>
+            </div>
+            <button type="button" id="btnRefresh" class="toda-refresh-btn">REFRESH</button>
+        </div>
+
+        <!-- Column 5: Action buttons -->
+        <div class="toda-col toda-sidebar">
+            <button type="button" id="btnAddRecord" class="toda-action-btn blue">Add Record</button>
+            <button type="button" id="btnSaveRecord" class="toda-action-btn red">Save Record</button>
+            <button type="button" id="btnPrintId" class="toda-action-btn yellow">Print ID</button>
+            <button type="button" id="btnDuplicateRecord" class="toda-action-btn gray">Duplicate Record</button>
+            <div class="toda-credit">Design by: Raecy</div>
+            <button type="button" id="btnDeleteRecord" class="toda-action-btn blue">Delete Record</button>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+@using TFRS.Models
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Certificate of Franchise";
+    var records = (ViewBag.MainRecords as IEnumerable<MainTableRecord>)?.ToList() ?? new List<MainTableRecord>();
+    var recordsJson = System.Text.Json.JsonSerializer.Serialize(records);
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/cr.css" asp-append-version="true" />
+}
+
+<main class="certificate-page">
+    <section class="certificate-shell" aria-label="Tricycle franchise certificate and registration">
+        <header class="certificate-header">
+            <div class="identity-block">
+                <div class="municipal-seal" aria-label="Municipality of Narra seal">NARRA<span>PALAWAN</span></div>
+                <div>
+                    <h1>TF CERTIFICATE AND REGISTRATION</h1>
+                    <p>SANGGUNIANG BAYAN, NARRA, PALAWAN</p>
+                </div>
+            </div>
+            <div class="certificate-search">
+                <label for="certificate-search-input">TRICYCLE FRANCHISE NO.</label>
+                <div><input id="certificate-search-input" type="search" placeholder="Search franchise no." autocomplete="off" /><button id="certificate-search-button" type="button">SEARCH</button></div>
+            </div>
+        </header>
+
+        <div class="certificate-workspace">
+            <section class="certificate-content">
+                <div id="certificate-empty" class="certificate-empty" hidden>No franchise record matched your search.</div>
+                <div class="certificate-form-grid">
+                    <div class="certificate-field emphasis"><label>TRICYCLE FRANCHISE NUMBER:</label><output id="franchiseNo"></output></div><div class="certificate-field"><label>DATE ISSUED:</label><output id="dateIssued"></output></div>
+                    <div class="certificate-field"><label>NAME OF OPERATOR:</label><output id="operatorName"></output></div><div class="certificate-field"><label>DATE EXPIRED:</label><output id="dateExpired"></output></div>
+                    <div class="certificate-field"><label>YEAR MODEL:</label><output id="yearModel"></output></div><div class="certificate-field"><label>TODA:</label><output id="toda"></output></div>
+                    <div class="certificate-field"><label>COLOR:</label><output id="color"></output></div><div class="certificate-field"><label>STATUS:</label><output id="status"></output></div>
+                    <div class="certificate-field"><label>ENGINE NUMBER:</label><output id="engineNumber"></output></div><div class="certificate-field"><label>REMARKS:</label><output id="remarks"></output></div>
+                    <div class="certificate-field"><label>CHASSIS NUMBER:</label><output id="chassisNumber"></output></div><div class="certificate-field address-field"><label>ADDRESS:</label><output id="address"></output></div>
+                    <div class="certificate-field"><label>PLATE NUMBER:</label><output id="plateNumber"></output></div><div class="certificate-field"><label>MAKE:</label><output id="make"></output></div>
+                    <div class="year-boxes"><div><span>YEAR<br />RENEW</span><output id="yearRenew"></output></div><div><span>YEAR<br />EXPIRED:</span><output id="yearExpired"></output></div></div>
+                    <div class="certificate-field route-field"><label>ROUTE COVERED:</label><output id="routeCovered"></output></div>
+                    <div class="certificate-field committee-field"><label>COMMITTEE REPORT:</label><output id="committeeReport"></output></div><div class="certificate-field"><label>SB APPROVED DATE:</label><output id="sbApprovedDate"></output></div>
+                    <div class="certificate-field"><label>MV FILE NO:</label><output id="mvFileNo"></output></div>
+                </div>
+                <div class="certificate-supporting">
+                    <div class="photo-panel"><span>PICTURE</span><div class="photo-placeholder">ID<br />PHOTO</div></div>
+                    <div class="qr-panel"><span>QR CODE:</span><div class="qr-pattern" aria-label="QR code placeholder"><i></i><i></i><i></i></div></div>
+                    <div class="file-row"><strong>Files:</strong><output id="fileLocation">RECORDS FILES</output></div>
+                </div>
+            </section>
+            <aside class="certificate-actions" aria-label="Record actions">
+                <button class="action-add" type="button">ADD<br />RECORD</button><button class="action-save" type="button">SAVE<br />RECORD</button><button class="action-duplicate" type="button">DUPLICATE<br />RECORD</button><button class="action-delete" type="button">Delete<br />Record</button>
+                <p>Design by:<br /><strong>The IT</strong></p><a asp-controller="Home" asp-action="Index">BACK</a>
+            </aside>
+        </div>
+        <section class="certificate-history">
+            <h2>HISTORY</h2>
+            <div class="history-table-wrap"><table><thead><tr><th>TRICYCLE NO.</th><th>NAME OF OPERATOR</th><th>TODA</th><th>STATUS</th><th>REMARKS</th><th>DATE ISSUED</th><th>DATE EXPIRED</th><th>ENGINE NUMBER</th><th>CHASSIS NUMBER</th><th>PLATE NUMBER</th><th>MAKE</th><th>YEAR MODEL</th><th>COLOR</th><th>YEAR RENEW</th></tr></thead><tbody id="history-table-body"></tbody></table></div>
+            <footer><span id="history-count">Record: 0 of 0</span><span>◀ ◁</span><input id="history-filter" type="search" placeholder="Search" aria-label="Filter history" /><span>▷ ▶</span></footer>
+        </section>
+    </section>
+</main>
+
+@section Scripts {
+<script>
+(() => {
+    const records = @Html.Raw(recordsJson);
+    const fieldIds = { franchiseNo: 'TricycleFranchiseNumber', operatorName: 'NameOfOperator', dateIssued: 'DateIssued', dateExpired: 'DateExpired', yearModel: 'YearModel', toda: 'TODA', color: 'Color', status: 'Status', engineNumber: 'EngineNumber', remarks: 'Remarks', chassisNumber: 'ChassisNumber', address: 'Address', plateNumber: 'PlateNumber', make: 'Make', yearRenew: 'YearRenew', yearExpired: 'YearExpired', routeCovered: 'RouteCovered', committeeReport: 'CommitteeReport', sbApprovedDate: 'SBApprovedDate', mvFileNo: 'MVFileNo' };
+    const searchInput = document.getElementById('certificate-search-input');
+    const emptyMessage = document.getElementById('certificate-empty');
+    const historyBody = document.getElementById('history-table-body');
+    const historyFilter = document.getElementById('history-filter');
+    const historyCount = document.getElementById('history-count');
+    const value = (record, name) => record?.[name] ?? '';
+    const formatDate = raw => raw ? new Date(raw).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC' }) : '';
+    const escapeHtml = raw => String(raw ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
+    function renderRecord(record) {
+        emptyMessage.hidden = !!record || records.length === 0;
+        Object.entries(fieldIds).forEach(([id, property]) => { const raw = value(record, property); document.getElementById(id).textContent = property === 'DateIssued' || property === 'DateExpired' ? formatDate(raw) : raw; });
+        document.getElementById('fileLocation').textContent = record ? `RECORDS FILES\\${value(record, 'TricycleFranchiseNumber')}` : 'RECORDS FILES';
+    }
+    function renderHistory(filter = '') {
+        const keyword = filter.trim().toLowerCase();
+        const visible = records.filter(record => [record.TricycleFranchiseNumber, record.NameOfOperator, record.TODA, record.Status].some(item => String(item ?? '').toLowerCase().includes(keyword))).slice(0, 100);
+        historyBody.innerHTML = visible.map(record => `<tr data-franchise="${escapeHtml(record.TricycleFranchiseNumber)}"><td>${escapeHtml(record.TricycleFranchiseNumber)}</td><td>${escapeHtml(record.NameOfOperator)}</td><td>${escapeHtml(record.TODA)}</td><td>${escapeHtml(record.Status)}</td><td>${escapeHtml(record.Remarks)}</td><td>${escapeHtml(formatDate(record.DateIssued))}</td><td>${escapeHtml(formatDate(record.DateExpired))}</td><td>${escapeHtml(record.EngineNumber)}</td><td>${escapeHtml(record.ChassisNumber)}</td><td>${escapeHtml(record.PlateNumber)}</td><td>${escapeHtml(record.Make)}</td><td>${escapeHtml(record.YearModel)}</td><td>${escapeHtml(record.Color)}</td><td>${escapeHtml(record.YearRenew)}</td></tr>`).join('');
+        historyCount.textContent = `Record: ${visible.length} of ${records.length}${records.length > visible.length ? ' (first 100 shown)' : ''}`;
+    }
+    function search() { const query = searchInput.value.trim().toLowerCase(); const record = !query ? records[0] : records.find(item => String(item.TricycleFranchiseNumber ?? '').toLowerCase() === query) || records.find(item => String(item.TricycleFranchiseNumber ?? '').toLowerCase().includes(query)); renderRecord(record); }
+    document.getElementById('certificate-search-button').addEventListener('click', search);
+    searchInput.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); search(); } });
+    historyFilter.addEventListener('input', event => renderHistory(event.target.value));
+    historyBody.addEventListener('click', event => { const row = event.target.closest('tr[data-franchise]'); if (!row) return; const record = records.find(item => item.TricycleFranchiseNumber === row.dataset.franchise); searchInput.value = row.dataset.franchise; renderRecord(record); });
+    renderRecord(records[0]); renderHistory();
+})();
+</script>
+}

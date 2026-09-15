@@ -1,0 +1,302 @@
+﻿/* ==========================================================
+   TFRS.wwwroot.css.IDsystem
+   Tricycle Operators and Drivers Association ID System
+   ========================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+.toda-page {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #3f3f46;
+    min-height: 100vh;
+    color: #ffffff;
+}
+
+/* ---------- Header ---------- */
+.toda-header {
+    background-color: #1b3a63;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 4px solid #14294a;
+}
+
+.toda-header-left h1 {
+    color: #ffe600;
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin: 0;
+    line-height: 1;
+}
+
+.toda-header-left h2 {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin: 4px 0 0 0;
+}
+
+.toda-header-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .toda-header-search label {
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 14px;
+        margin-right: 8px;
+    }
+
+.toda-keyword-box {
+    width: 420px;
+    height: 34px;
+    background: #ffffff;
+    border: 2px solid #14294a;
+    border-radius: 2px;
+}
+
+.toda-search-btn {
+    width: 150px;
+    height: 34px;
+    background: linear-gradient(#f5f5f5, #d8d8d8);
+    border: 2px solid #999;
+    border-radius: 2px;
+    font-weight: 800;
+    font-size: 18px;
+    color: #222;
+    cursor: pointer;
+}
+
+.toda-back-btn {
+    background: #000000;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 12px;
+    border: 1px solid #555;
+    border-radius: 3px;
+    padding: 6px 14px;
+    cursor: pointer;
+    align-self: flex-start;
+}
+
+/* ---------- Body layout ---------- */
+.toda-body {
+    display: grid;
+    grid-template-columns: 210px 210px 300px 320px 150px;
+    gap: 16px;
+    padding: 18px 20px;
+}
+
+.toda-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ---------- Field labels ---------- */
+.toda-label {
+    display: inline-block;
+    background: #3f3f46;
+    color: #4da6ff;
+    border: 2px solid #4da6ff;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 10px;
+    border-radius: 2px;
+    width: fit-content;
+}
+
+    .toda-label.red {
+        background: #e8302a;
+        color: #ffffff;
+        border: 2px solid #e8302a;
+        width: 100%;
+        text-align: center;
+        font-size: 16px;
+        padding: 6px 0;
+    }
+
+    .toda-label.brown {
+        background: #7a4a2b;
+        color: #ffe600;
+        border: 2px solid #7a4a2b;
+        width: 100%;
+        text-align: center;
+        font-size: 16px;
+        padding: 6px 0;
+    }
+
+    .toda-label.plain {
+        background: transparent;
+        border: 2px solid #4da6ff;
+    }
+
+/* ---------- Inputs / boxes ---------- */
+.toda-input {
+    background: #ffffff;
+    border: 1px solid #888;
+    width: 100%;
+}
+
+    .toda-input.small {
+        height: 32px;
+    }
+
+    .toda-input.medium {
+        height: 60px;
+    }
+
+    .toda-input.tall {
+        height: 130px;
+    }
+
+    .toda-input.xtall {
+        height: 190px;
+    }
+
+.franchise-number-box {
+    background: #e8302a;
+    height: 36px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+    .franchise-number-box::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 4px;
+        bottom: 4px;
+        width: 2px;
+        background: #21e0d6;
+    }
+
+.violation-header {
+    background: #e8302a;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 16px;
+    text-align: center;
+    padding: 6px 0;
+    width: 100%;
+}
+
+/* Picture area */
+.toda-picture-box {
+    background: #ffffff;
+    width: 100%;
+    height: 300px;
+    border: 1px solid #888;
+}
+
+.toda-picture-label {
+    border: 2px solid #4da6ff;
+    color: #4da6ff;
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 0;
+    width: 140px;
+    margin: 8px auto 0;
+}
+
+.toda-qr-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.toda-qr-box {
+    background: #ffffff;
+    width: 60px;
+    height: 60px;
+    border: 1px solid #888;
+}
+
+.year-renew-wrap {
+    flex: 1;
+}
+
+/* ---------- Nav buttons under picture ---------- */
+.toda-nav-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.toda-nav-btn {
+    background: linear-gradient(#ffe66b, #f5c400);
+    border: 2px solid #b38b00;
+    color: #000;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 6px 16px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.toda-refresh-btn {
+    display: block;
+    margin: 10px auto 0;
+    background: linear-gradient(#b9f6b9, #6fce6f);
+    border: 2px solid #2f7a2f;
+    color: #000;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 6px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* ---------- Right sidebar action buttons ---------- */
+.toda-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.toda-action-btn {
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    padding: 22px 10px;
+    cursor: pointer;
+    box-shadow: 0 3px 4px rgba(0,0,0,0.4);
+}
+
+    .toda-action-btn.blue {
+        background: linear-gradient(#3d8fe0, #1f5fa8);
+    }
+
+    .toda-action-btn.red {
+        background: linear-gradient(#e8534c, #b8221c);
+    }
+
+    .toda-action-btn.yellow {
+        background: linear-gradient(#ffe64d, #f2c200);
+        color: #000000;
+    }
+
+    .toda-action-btn.gray {
+        background: linear-gradient(#a9a9a9, #7d7d7d);
+    }
+
+.toda-credit {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    margin-top: 4px;
+}

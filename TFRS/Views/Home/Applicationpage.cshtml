@@ -1,0 +1,674 @@
+﻿@model TFRS.Models.MainTableRecord
+@{
+	Layout = "_Layout";
+	ViewData["Title"] = "Application Form";
+}
+
+<style>
+	html, body {
+		height: 100%;
+		margin: 0;
+		padding: 0;
+	}
+
+	.app-container {
+		display: flex;
+		flex-direction: column;
+		height: 100vh;
+		margin: 0;
+		padding: 0;
+	}
+
+	.card-wrapper {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		border: none;
+	}
+
+	.card-body-wrapper {
+		flex: 1;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.form-content {
+		flex: 1;
+		overflow-y: auto;
+	}
+</style>
+
+<div id="main container" class="app-container">
+	<div class="card shadow-sm card-wrapper">
+		<div class="card-header bg-primary text-white d-flex align-items-center">
+			<a class="btn btn-light me-4" asp-controller="Home" asp-action="Index">Back</a>
+			<img src="~/images/seal.png" alt="Seal" class="me-3" style="height:48px; width:48px; object-fit:contain;" onerror="this.style.display='none'" />
+			<div>
+				<h5 class="mb-0">Tricycle Franchise Application</h5>
+				<small class="text-light">Archives and Records Section</small>
+			</div>
+
+			<script>
+							document.addEventListener('DOMContentLoaded', function() {
+								function setField(selector, value) {
+									var el = document.querySelector(selector);
+									if (!el) return;
+									if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+										el.value = value ?? '';
+									} else {
+										el.innerText = value ?? '';
+									}
+								}
+
+								async function loadRecord(franchise) {
+									try {
+										const res = await fetch('/Records/GetByFranchise?id=' + encodeURIComponent(franchise));
+										if (!res.ok) throw new Error('Not found');
+										const data = await res.json();
+
+										// map fields
+										setField('input[name="DateSubmitted"]', data.dateSubmitted || data.DateSubmitted || '');
+										setField('input[name="NameOfOperator"]', data.nameOfOperator || data.NameOfOperator || '');
+										setField('input[name="Address"]', data.address || data.Address || '');
+										setField('input[name="Make"]', data.make || data.Make || '');
+										setField('input[name="EngineNumber"]', data.engineNumber || data.EngineNumber || '');
+										setField('input[name="Color"]', data.color || data.Color || '');
+										setField('input[name="ChassisNumber"]', data.chassisNumber || data.ChassisNumber || '');
+										setField('input[name="YearModel"]', data.yearModel || data.YearModel || '');
+										setField('input[name="PlateNumber"]', data.plateNumber || data.PlateNumber || '');
+										setField('input[name="TricycleFranchiseNumber"]', data.tricycleFranchiseNumber || data.TricycleFranchiseNumber || '');
+										setField('input[name="MVFileNo"]', data.mvFileNo || data.MVFileNo || '');
+										setField('input[name="TODA"]', data.toda || data.TODA || '');
+										setField('input[name="RouteCovered"]', data.routeCovered || data.RouteCovered || '');
+										setField('textarea[name="Remarks"]', data.remarks || data.Remarks || '');
+										setField('textarea[name="CommitteeReport"]', data.committeeReport || data.CommitteeReport || '');
+										setField('input[name="Status"]', data.status || data.Status || '');
+										setField('input[name="SBApprovedDate"]', data.sBApprovedDate || data.SBApprovedDate || '');
+										setField('input[name="YearRenew"]', data.yearRenew || data.YearRenew || '');
+										setField('input[name="YearExpired"]', data.yearExpired || data.YearExpired || '');
+
+									} catch (err) {
+										console.error(err);
+										alert('Unable to load record');
+									}
+								}
+
+								// wire buttons
+								document.querySelectorAll('#masterlist table tbody .btn-group button').forEach(function(btn) {
+									btn.addEventListener('click', function(e) {
+										var row = e.target.closest('tr');
+										if (!row) return;
+										var franchise = row.cells[2].innerText.trim();
+										if (!franchise) return;
+										loadRecord(franchise);
+									});
+								});
+
+								document.getElementById('btn-clear').addEventListener('click', function() {
+									document.querySelectorAll('form [name]').forEach(function(f) {
+										if (f.tagName === 'INPUT' || f.tagName === 'TEXTAREA' || f.tagName === 'SELECT') f.value = '';
+									});
+								});
+							});
+			</script>
+			<div id="header-controls" class="ms-auto">
+				<div id="header-search-group" class="input-group">
+					<input id="header-search"
+						   class="form-control form-control-sm"
+						   placeholder="Search keywords...">
+					<button id="header-search-btn"
+							class="btn btn-sm btn-light"
+							type="button">
+						Search
+					</button>
+					<button id="header-print-btn" class="btn btn-sm btn-outline-light ms-2">
+						Print
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<div id="card-body-main" class="card-body card-body-wrapper">
+			<div id="form-content-main" class="form-content">
+				<form id="application-form" asp-controller="Application" asp-action="Save" method="post">
+					@Html.AntiForgeryToken()
+					<div id="validation-summary" asp-validation-summary="ModelOnly" class="text-danger"></div>
+					<div id="form-row-main" class="row g-3">
+						<div id="form-left-column" class="col-lg-8">
+							<div id="form-fields-container" class="row g-3">
+
+								<div id="filing-section" class="col-12 mt-2">
+									<div id="filing-card" class="border rounded p-3 h-100">
+										<div id="filing-fields" class="row h-100 gx-3">
+											<div id="filingdate" class="col-md-4">
+												<label class="form-label">Date of Filing</label>
+												<input asp-for="DateSubmitted" type="date" id="dateInput" class="form-control" />
+											</div>
+											<div id="filingyear" class="col-md-4">
+												<label class="form-label">Year</label>
+
+												<select id="yearSelect" class="form-select">
+													<option selected></option>
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+
+
+								<div id="operator-section" class="col-12 mt-2">
+									<div id="operator-card" class="border rounded p-3 h-100">
+										<div id="operator-fields" class="row h-100 gx-3">
+
+											<div id="operator-name-field" class="col-4">
+												<label class="form-label">Name of Operator</label>
+												<input asp-for="NameOfOperator" class="form-control" />
+											</div>
+
+											<div id="contact-field" class="col-md-3">
+												<label class="form-label">Contact No</label>
+												<input name="ContactNo" type="text" class="form-control" />
+											</div>
+
+											<div id="address-field" class="col-5 mb-3">
+												<label class="form-label">Address</label>
+												<input asp-for="Address" class="form-control" />
+											</div>
+											<h6 id="cedula-header" class="mb-1 fw-bolder">Cedula</h6>
+											<div id="cedula-fields" class="row g-1">
+												<div class="col-md-3">
+													<label class="form-label">Community Tax No</label>
+													<input name="CommunityTaxNo" type="text" class="form-control" />
+												</div>
+												<div class="col-md-3">
+													<label class="form-label">Date Issued</label>
+													<input asp-for="DateIssued" type="date" class="form-control" />
+												</div>
+												<div class="col-md-6">
+													<label class="form-label">Place Issued</label>
+													<input name="PlaceIssued" type="text" class="form-control" />
+												</div>
+											</div>
+										</div>
+									</div>
+
+								</div>
+
+							
+								<div id="motorcycle-section" class="col-12 mt-3">
+									<div id="motorcycle-card" class="border rounded p-3 h-100">
+										<div id="motorcycle-fields" class="row h-100 gx-3">
+											<h6 id="motorcycle-header" class="mb-2 fw-bolder">Motorcycle Specification</h6>
+											<div id="motorcycle-details" class="row g-1">
+												<div class="col-md-4">
+													<label class="form-label">Make</label>
+													<input asp-for="Make" class="form-control" />
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Motor No</label>
+													<input asp-for="EngineNumber" class="form-control" />
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Color</label>
+													<input asp-for="Color" class="form-control" />
+												</div>
+
+												<div class="col-md-4">
+													<label class="form-label">Chassis No</label>
+													<input asp-for="ChassisNumber" class="form-control" />
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Year Model</label>
+													<input asp-for="YearModel" type="number" class="form-control" />
+													<span asp-validation-for="YearModel" class="text-danger"></span>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Plate No</label>
+													<input asp-for="PlateNumber" class="form-control" />
+												</div>
+											</div>
+										</div>
+									</div>
+
+								</div>
+								<div id="remarks-section" class="col-12 mt-3">
+									<div id="remarks-card" class="border rounded p-3 h-100">
+										<div id="remarks-fields" class="row h-100 gx-3">
+											<div id="remarks-field">
+												<label class="form-label">Remarks</label>
+												<textarea asp-for="Remarks" class="form-control" rows="2"></textarea>
+											</div>
+											<div id="committee-report-field">
+												<label class="form-label">Committee Report</label>
+												<textarea asp-for="CommitteeReport" class="form-control" rows="2"></textarea>
+											</div>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+
+						<div id="form-right-column" class="col-lg-4">
+							<div id="app-details-card" class="border rounded p-3 h-100">
+
+								<h5 id="app-details-header" class="mb-3">Application Details</h5>
+
+								<div id="app-details-fields" class="row g-3">
+
+									<div class="col-md-6">
+										<label class="form-label">Status</label>
+										<select asp-for="Status" class="form-select">
+											<option value="">Select status</option>
+											<option>Active</option>
+											<option>Pending</option>
+											<option>Expired</option>
+										</select>
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Type of Ownership</label>
+										<select name="TypeOfOwnership" class="form-select">
+											<option value="">Select Type of Ownership</option>
+											<option>Single Proprietorship</option>
+											<option>Cooperative</option>
+											<option>Corporation</option>
+										</select>
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Type of Application</label>
+										<select name="TypeOfApplication" class="form-select">
+											<option value=""></option>
+											<option>New</option>
+											<option>Renew</option>
+										</select>
+
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Verified By</label>
+										<select name="VerifiedBy" class="form-select"></select>
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Franchise No.</label>
+										<input asp-for="TricycleFranchiseNumber" class="form-control" />
+										<span asp-validation-for="TricycleFranchiseNumber" class="text-danger"></span>
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">MV File No.</label>
+										<input asp-for="MVFileNo" class="form-control" />
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">TODA</label>
+										<input asp-for="TODA" class="form-control" />
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Route</label>
+										<input asp-for="RouteCovered" class="form-control" />
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Color Code</label>
+										<input asp-for="Color" class="form-control" />
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">S.B. Approved Date</label>
+										<input asp-for="SBApprovedDate" type="date" class="form-control" />
+										<span asp-validation-for="SBApprovedDate" class="text-danger"></span>
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Year Renew</label>
+										<input asp-for="YearRenew" type="number" class="form-control" />
+										<span asp-validation-for="YearRenew" class="text-danger"></span>
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Year Expired</label>
+										<input asp-for="YearExpired" type="number" class="form-control" />
+										<span asp-validation-for="YearExpired" class="text-danger"></span>
+									</div>
+
+								</div>
+
+								<hr class="my-4" />
+
+								<div id="form-buttons" class="d-flex gap-2 flex-wrap">
+									<button id="btn-new-record" type="button" class="btn btn-success">
+										New Record
+									</button>
+
+									<button id="btn-save-record" type="submit" class="btn btn-primary">
+										Save Record
+									</button>
+
+									<button id="btn-duplicate" type="button" class="btn btn-outline-secondary">
+										Duplicate
+									</button>
+
+									<button id="btn-delete" type="button" class="btn btn-outline-danger">
+										Delete
+									</button>
+
+									<button type="button" id="btn-clear" class="btn btn-secondary">
+										Clear Fields
+									</button>
+								</div>
+
+							</div>
+						</div>
+
+						@section Scripts {
+							<script src="~/lib/jquery/dist/jquery.min.js"></script>
+							<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+							<script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+						}
+					</div>
+				</form>
+
+				<hr class="my-4" />
+				<div id="masterlist" class="mt-3">
+					<div id="masterlist-header" class="row align-items-center mb-3">
+						<div id="masterlist-title-col" class="col">
+							<h5 id="masterlist-title" class="mb-0">Masterlist</h5>
+						</div>
+
+						<div id="masterlist-search-col" class="col-auto">
+							<div id="masterlist-search-group" class="input-group input-group-sm">
+								<input id="masterlist-search"
+									   type="text"
+									   class="form-control"
+									   placeholder="Search keywords...">
+
+								<button id="masterlist-search-btn"
+										class="btn btn-outline-secondary"
+										type="button">
+									Search
+								</button>
+							</div>
+						</div>
+					</div>
+					@{
+						var __recordsList = (ViewBag.MainRecords as IEnumerable<TFRS.Models.MainTableRecord>)?.ToList() ?? new List<TFRS.Models.MainTableRecord>();
+						var __initialCount = Math.Min(5, __recordsList.Count);
+						var __recordsJson = System.Text.Json.JsonSerializer.Serialize(__recordsList);
+					}
+
+					<div id="masterlist-table-wrapper" class="table-responsive" style="max-height:260px; overflow:auto;">
+						<style>
+
+							#masterlist-table {
+							table-layout: fixed;
+							}
+
+							#masterlist-table thead th {
+							position: sticky;
+							top: 0;
+							z-index: 5;
+							background: #f8f9fa;
+							}
+
+							.col-route {
+							max-width: 160px;
+							white-space: nowrap;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							}
+						</style>
+
+						<table id="masterlist-data" class="table table-striped table-bordered table-hover table-sm">
+							<thead id="masterlist-thead" class="table-light">
+								<tr id="masterlist-header-row">
+									<th style="width:4%">#</th>
+									<th>Name</th>
+									<th style="width:12%">Franchise No.</th>
+									<th style="width:10%">TODA</th>
+									<th style="width:12%">Route</th>
+									<th style="width:10%">Color</th>
+									<th style="width:10%">Status</th>
+									<th style="width:12%">Actions</th>
+								</tr>
+							</thead>
+							<tbody id="masterlist-tbody">
+								@for (int i = 0; i < __initialCount; i++)
+								{
+									var __r = __recordsList[i];
+									<tr>
+										<td>@(i + 1)</td>
+										<td>@__r.NameOfOperator</td>
+										<td>@__r.TricycleFranchiseNumber</td>
+										<td>@__r.TODA</td>
+										<td class="col-route" title="@__r.RouteCovered">@__r.RouteCovered</td>
+										<td>@__r.Color</td>
+										<td>
+											@{
+												var __status = (__r.Status ?? "").ToString();
+												if (string.Equals(__status, "Active", StringComparison.OrdinalIgnoreCase))
+												{
+													<text><span class="badge bg-success">Active</span></text>
+												}
+												else if (string.Equals(__status, "Pending", StringComparison.OrdinalIgnoreCase))
+												{
+													<text><span class="badge bg-warning text-dark">Pending</span></text>
+												}
+												else
+												{
+													<text><span class="badge bg-secondary">@__status</span></text>
+												}
+											}
+										</td>
+										<td>
+											<div class="btn-group" role="group">
+												<button class="btn btn-sm btn-outline-primary btn-view">View</button>
+												<button class="btn btn-sm btn-outline-secondary btn-edit">Edit</button>
+											</div>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+
+					<script>
+						const masterData = @Html.Raw(__recordsJson);
+						let currentIndex = @__initialCount;
+						const pageSize = 5;
+
+						const wrapper = document.getElementById('masterlist-table-wrapper');
+						const tbody = document.getElementById('masterlist-tbody');
+
+						let visibleData = Array.isArray(masterData) ? masterData.slice() : [];
+
+						function appendNext() {
+						if (currentIndex >= visibleData.length) return;
+						const end = Math.min(currentIndex + pageSize, visibleData.length);
+						for (let i = currentIndex; i < end; i++) {
+						const r = visibleData[i];
+						const tr = document.createElement('tr');
+						tr.innerHTML = `
+						<td>${i+1}</td>
+						<td>${r.NameOfOperator ?? ''}</td>
+						<td>${r.TricycleFranchiseNumber ?? ''}</td>
+						<td>${r.TODA ?? ''}</td>
+						<td class="col-route" title="${r.RouteCovered ?? ''}">${r.RouteCovered ?? ''}</td>
+						<td>${r.Color ?? ''}</td>
+						<td>${r.Status ? (r.Status === 'Active' ? '<span class="badge bg-success">Active</span>' : (r.Status === 'Pending' ? '<span class="badge bg-warning text-dark">Pending</span>' : `<span class="badge bg-secondary">${r.Status}</span>`)) : ''}</td>
+						<td><div class="btn-group" role="group"><button class="btn btn-sm btn-outline-primary btn-view">View</button><button class="btn btn-sm btn-outline-secondary btn-edit">Edit</button></div></td>`;
+						tbody.appendChild(tr);
+						}
+						currentIndex = end;
+						}
+
+						wrapper.addEventListener('scroll', function() {
+						const threshold = 0.8;
+						if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight * threshold) {
+						appendNext();
+						}
+						});
+
+						function renderReset() {
+						tbody.innerHTML = '';
+						currentIndex = 0;
+						appendNext();
+						ensureScrollable();
+						}
+
+						function ensureScrollable() {
+						if (!wrapper || !tbody) return;
+						let safety = 1000; // avoid infinite loops
+						while (wrapper.scrollHeight <= wrapper.clientHeight && currentIndex < visibleData.length && safety-- > 0) {
+						appendNext();
+						}
+						}
+
+						// Search handling
+						const headerSearch = document.getElementById("header-search");
+						const masterSearch = document.getElementById("masterlist-search");
+
+						function applySearch(keyword) {
+						keyword = keyword.trim().toLowerCase();
+
+						if (!keyword) {
+						visibleData = masterData.slice();
+						} else {
+						visibleData = masterData.filter(r => {
+						const fields = [
+						r.NameOfOperator,
+						r.TricycleFranchiseNumber,
+						r.TODA,
+						r.RouteCovered,
+						r.Color,
+						r.Status
+						];
+
+						return fields.some(f =>
+						(f || "").toString().toLowerCase().includes(keyword)
+						);
+						});
+						}
+
+						renderReset();
+						}
+
+						// Header search
+						document.getElementById("header-search-btn")
+						.addEventListener("click", () => {
+						masterSearch.value = headerSearch.value;
+						applySearch(headerSearch.value);
+						});
+
+						// Masterlist search
+						document.getElementById("masterlist-search-btn")
+						.addEventListener("click", () => {
+						headerSearch.value = masterSearch.value;
+						applySearch(masterSearch.value);
+						});
+
+						// Live synchronization
+						headerSearch.addEventListener("input", () => {
+						masterSearch.value = headerSearch.value;
+						applySearch(headerSearch.value);
+						});
+
+						masterSearch.addEventListener("input", () => {
+						headerSearch.value = masterSearch.value;
+						applySearch(masterSearch.value);
+						});
+
+				
+						setTimeout(function() { ensureScrollable(); }, 20);
+
+						tbody.addEventListener('click', function(e) {
+						const btn = e.target.closest('.btn-view, .btn-edit');
+						if (!btn) return;
+						const row = btn.closest('tr');
+						const franchise = row.cells[2].innerText.trim();
+						if (!franchise) return;
+						fetch('/Records/GetByFranchise?id=' + encodeURIComponent(franchise))
+						.then(r => { if (!r.ok) throw new Error('Not found'); return r.json(); })
+						.then(data => {
+						const set = (sel, v) => { const el = document.querySelector(sel); if (el) el.value = v ?? ''; };
+						set('input[name="DateSubmitted"]', data.DateSubmitted || data.dateSubmitted);
+						set('input[name="NameOfOperator"]', data.NameOfOperator || data.nameOfOperator);
+						set('input[name="Address"]', data.Address || data.address);
+						set('input[name="Make"]', data.Make || data.make);
+						set('input[name="EngineNumber"]', data.EngineNumber || data.engineNumber);
+						set('input[name="Color"]', data.Color || data.color);
+						set('input[name="ChassisNumber"]', data.ChassisNumber || data.chassisNumber);
+						set('input[name="YearModel"]', data.YearModel || data.yearModel);
+						set('input[name="PlateNumber"]', data.PlateNumber || data.plateNumber);
+						set('input[name="TricycleFranchiseNumber"]', data.TricycleFranchiseNumber || data.tricycleFranchiseNumber);
+						set('input[name="MVFileNo"]', data.MVFileNo || data.mvFileNo);
+						set('input[name="TODA"]', data.TODA || data.toda);
+						set('input[name="RouteCovered"]', data.RouteCovered || data.routeCovered);
+						const ta1 = document.querySelector('textarea[name="Remarks"]'); if (ta1) ta1.value = data.Remarks || data.remarks || '';
+						const ta2 = document.querySelector('textarea[name="CommitteeReport"]'); if (ta2) ta2.value = data.CommitteeReport || data.committeeReport || '';
+						const selStatus = document.querySelector('select[name="Status"], select[asp-for="Status"]'); if (selStatus) selStatus.value = data.Status || data.status || '';
+						set('input[name="SBApprovedDate"]', data.SBApprovedDate || data.sBApprovedDate);
+						set('input[name="YearRenew"]', data.YearRenew || data.yearRenew);
+						set('input[name="YearExpired"]', data.YearExpired || data.yearExpired);
+						set('input[name="Typeofapplication"]', data.Typeofapplication || data.Typeofapplication);
+						})
+						.catch(err => { console.error(err); alert('Unable to load record'); });
+						});
+
+						function setupFormClear(buttonId, formId, classTarget = 'clearable') {
+						const clearBtn = document.getElementById(buttonId);
+						const targetForm = document.getElementById(formId);
+
+						if (!clearBtn || !targetForm) return;
+
+						clearBtn.addEventListener('click', function(e) {
+						e.preventDefault();
+
+						// 1. Add a confirmation prompt
+						const confirmClear = confirm("Are you sure you want to clear the form? All unsaved changes will be lost.");
+						if (!confirmClear) return; 
+
+						targetForm.querySelectorAll(`.${classTarget}`).forEach(function(field) {
+						const tag = field.tagName;
+
+						if (tag === 'INPUT' || tag === 'TEXTAREA') {
+						field.value = ''; 
+						}
+						else if (tag === 'SELECT') {
+						field.selectedIndex = 0; 
+						}
+						});
+						});
+						}
+
+						setupFormClear('btn-clear', 'app-form', 'clearable');
+
+						document.getElementById('dateInput').addEventListener('change', function() {
+						const dateValue = this.value;
+						const yearSelect = document.getElementById('yearSelect');
+
+						yearSelect.innerHTML = '<option selected></option>';
+
+						if (dateValue) {
+						const year = dateValue.substring(0, 4);
+
+						const newOption = new Option(year, year);
+
+						yearSelect.add(newOption);
+						yearSelect.value = year;
+						}
+						});
+					</script>
+				</div>
+			</div>
+		</div>
+
+		<div id="card-footer" class="card-footer text-muted text-end">
+			Designed and Developed by: The IT
+		</div>
+	</div>
+</div>

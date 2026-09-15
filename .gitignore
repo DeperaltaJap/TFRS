@@ -1,0 +1,27 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+appsettings.Local.json
+
+.env
+
+# User-specific Visual Studio files
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build output
+[Dd]ebug/
+[Rr]elease/
+
+# Rider
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+TFRSdb.accdb
