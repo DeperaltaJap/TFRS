@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace TFRegistration.Controllers
+namespace TFRS.Controllers
 {
     public class HomeController : Controller
     {

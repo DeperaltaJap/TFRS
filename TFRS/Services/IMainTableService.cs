@@ -8,5 +8,7 @@ namespace TFRS.Services
         IEnumerable<MainTableRecord> GetAll();
         void Add(MainTableRecord record);
         MainTableRecord? GetByFranchiseNumber(string franchiseNumber);
+        void Update(MainTableRecord record);
+        void Delete(string franchiseNumber);
     }
 }

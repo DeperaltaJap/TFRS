@@ -67,42 +67,70 @@
 										if (!res.ok) throw new Error('Not found');
 										const data = await res.json();
 
-										// map fields
-										setField('input[name="DateSubmitted"]', data.dateSubmitted || data.DateSubmitted || '');
-										setField('input[name="NameOfOperator"]', data.nameOfOperator || data.NameOfOperator || '');
-										setField('input[name="Address"]', data.address || data.Address || '');
-										setField('input[name="Make"]', data.make || data.Make || '');
-										setField('input[name="EngineNumber"]', data.engineNumber || data.EngineNumber || '');
-										setField('input[name="Color"]', data.color || data.Color || '');
-										setField('input[name="ChassisNumber"]', data.chassisNumber || data.ChassisNumber || '');
-										setField('input[name="YearModel"]', data.yearModel || data.YearModel || '');
-										setField('input[name="PlateNumber"]', data.plateNumber || data.PlateNumber || '');
-										setField('input[name="TricycleFranchiseNumber"]', data.tricycleFranchiseNumber || data.TricycleFranchiseNumber || '');
-										setField('input[name="MVFileNo"]', data.mvFileNo || data.MVFileNo || '');
-										setField('input[name="TODA"]', data.toda || data.TODA || '');
-										setField('input[name="RouteCovered"]', data.routeCovered || data.RouteCovered || '');
-										setField('textarea[name="Remarks"]', data.remarks || data.Remarks || '');
-										setField('textarea[name="CommitteeReport"]', data.committeeReport || data.CommitteeReport || '');
-										setField('input[name="Status"]', data.status || data.Status || '');
-										setField('input[name="SBApprovedDate"]', data.sBApprovedDate || data.SBApprovedDate || '');
-										setField('input[name="YearRenew"]', data.yearRenew || data.YearRenew || '');
-										setField('input[name="YearExpired"]', data.yearExpired || data.YearExpired || '');
-
+										setField('input[name="DateSubmitted"]', data.DateSubmitted || '');
+										setField('input[name="NameOfOperator"]', data.NameOfOperator || '');
+										setField('input[name="ContactNo"]', data.ContactNo || '');
+										setField('input[name="Address"]', data.Address || '');
+										setField('input[name="CommunityTaxNo"]', data.CommunityTaxNo || '');
+										setField('input[name="PlaceIssued"]', data.PlaceIssued || '');
+										setField('input[name="Make"]', data.Make || '');
+										setField('input[name="EngineNumber"]', data.EngineNumber || '');
+										setField('input[name="Color"]', data.Color || '');
+										setField('input[name="ChassisNumber"]', data.ChassisNumber || '');
+										setField('input[name="YearModel"]', data.YearModel || '');
+										setField('input[name="PlateNumber"]', data.PlateNumber || '');
+										setField('input[name="TricycleFranchiseNumber"]', data.TricycleFranchiseNumber || '');
+										setField('input[name="MVFileNo"]', data.MVFileNo || '');
+										setField('input[name="TODA"]', data.TODA || '');
+										setField('input[name="RouteCovered"]', data.RouteCovered || '');
+										setField('textarea[name="Remarks"]', data.Remarks || '');
+										setField('textarea[name="CommitteeReport"]', data.CommitteeReport || '');
+										setField('select[name="Status"]', data.Status || '');
+										setField('select[name="TypeOfOwnership"]', data.TypeOfOwnership || '');
+										setField('select[name="TypeOfApplication"]', data.TypeOfApplication || '');
+										setField('select[name="VerifiedBy"]', data.VerifiedBy || '');
+										setField('input[name="SBApprovedDate"]', data.SBApprovedDate || '');
+										setField('input[name="YearRenew"]', data.YearRenew || '');
+										setField('input[name="YearExpired"]', data.YearExpired || '');
+										window._currentFranchise = franchise;
 									} catch (err) {
 										console.error(err);
 										alert('Unable to load record');
 									}
 								}
 
-								// wire buttons
 								document.querySelectorAll('#masterlist table tbody .btn-group button').forEach(function(btn) {
 									btn.addEventListener('click', function(e) {
 										var row = e.target.closest('tr');
 										if (!row) return;
 										var franchise = row.cells[2].innerText.trim();
 										if (!franchise) return;
-										loadRecord(franchise);
+										var btnClass = e.target.classList.contains('btn-edit') ? 'edit' : 'view';
+										if (btnClass === 'edit') {
+											window.location.href = '/Application/Edit?franchiseNumber=' + encodeURIComponent(franchise);
+										} else {
+											loadRecord(franchise);
+										}
 									});
+								});
+
+								document.getElementById('btn-new-record').addEventListener('click', function() {
+									window.location.href = '/Application/Create';
+								});
+
+								document.getElementById('btn-delete').addEventListener('click', function() {
+									var franchise = document.querySelector('input[name="TricycleFranchiseNumber"]')?.value?.trim();
+									if (!franchise) { alert('No franchise number to delete.'); return; }
+									if (!confirm('Are you sure you want to delete record ' + franchise + '?')) return;
+									var form = document.getElementById('application-form');
+									form.setAttribute('action', '/Application/Delete?franchiseNumber=' + encodeURIComponent(franchise));
+									form.submit();
+								});
+
+								document.getElementById('btn-duplicate').addEventListener('click', function() {
+									var franchise = document.querySelector('input[name="TricycleFranchiseNumber"]')?.value?.trim();
+									if (!franchise) { alert('No franchise number to duplicate.'); return; }
+									window.location.href = '/Application/Edit?franchiseNumber=' + encodeURIComponent(franchise) + '&duplicate=true';
 								});
 
 								document.getElementById('btn-clear').addEventListener('click', function() {
@@ -131,7 +159,7 @@
 
 		<div id="card-body-main" class="card-body card-body-wrapper">
 			<div id="form-content-main" class="form-content">
-				<form id="application-form" asp-controller="Application" asp-action="Save" method="post">
+				<form id="application-form" asp-controller="Application" asp-action="@(ViewBag.IsEditMode == true ? "Edit" : "Save")" method="post">
 					@Html.AntiForgeryToken()
 					<div id="validation-summary" asp-validation-summary="ModelOnly" class="text-danger"></div>
 					<div id="form-row-main" class="row g-3">
@@ -168,7 +196,7 @@
 
 											<div id="contact-field" class="col-md-3">
 												<label class="form-label">Contact No</label>
-												<input name="ContactNo" type="text" class="form-control" />
+												<input asp-for="ContactNo" type="text" class="form-control" />
 											</div>
 
 											<div id="address-field" class="col-5 mb-3">
@@ -177,18 +205,18 @@
 											</div>
 											<h6 id="cedula-header" class="mb-1 fw-bolder">Cedula</h6>
 											<div id="cedula-fields" class="row g-1">
-												<div class="col-md-3">
-													<label class="form-label">Community Tax No</label>
-													<input name="CommunityTaxNo" type="text" class="form-control" />
-												</div>
-												<div class="col-md-3">
-													<label class="form-label">Date Issued</label>
-													<input asp-for="DateIssued" type="date" class="form-control" />
-												</div>
-												<div class="col-md-6">
-													<label class="form-label">Place Issued</label>
-													<input name="PlaceIssued" type="text" class="form-control" />
-												</div>
+<div class="col-md-3">
+												<label class="form-label">Community Tax No</label>
+												<input asp-for="CommunityTaxNo" type="text" class="form-control" />
+											</div>
+											<div class="col-md-3">
+												<label class="form-label">Date Issued</label>
+												<input asp-for="DateIssued" type="date" class="form-control" />
+											</div>
+											<div class="col-md-6">
+												<label class="form-label">Place Issued</label>
+												<input asp-for="PlaceIssued" type="text" class="form-control" />
+											</div>
 											</div>
 										</div>
 									</div>
@@ -269,7 +297,7 @@
 
 									<div class="col-md-6">
 										<label class="form-label">Type of Ownership</label>
-										<select name="TypeOfOwnership" class="form-select">
+										<select asp-for="TypeOfOwnership" class="form-select">
 											<option value="">Select Type of Ownership</option>
 											<option>Single Proprietorship</option>
 											<option>Cooperative</option>
@@ -279,7 +307,7 @@
 
 									<div class="col-md-6">
 										<label class="form-label">Type of Application</label>
-										<select name="TypeOfApplication" class="form-select">
+										<select asp-for="TypeOfApplication" class="form-select">
 											<option value=""></option>
 											<option>New</option>
 											<option>Renew</option>
@@ -289,7 +317,12 @@
 
 									<div class="col-md-6">
 										<label class="form-label">Verified By</label>
-										<select name="VerifiedBy" class="form-select"></select>
+										<select asp-for="VerifiedBy" class="form-select">
+											<option value="">Select Verified By</option>
+											<option>Admin</option>
+											<option>Officer</option>
+											<option>Manager</option>
+										</select>
 									</div>
 
 									<div class="col-md-6">
@@ -346,7 +379,7 @@
 									</button>
 
 									<button id="btn-save-record" type="submit" class="btn btn-primary">
-										Save Record
+										@(ViewBag.IsEditMode == true ? "Update Record" : "Save Record")
 									</button>
 
 									<button id="btn-duplicate" type="button" class="btn btn-outline-secondary">
@@ -591,32 +624,41 @@
 						const row = btn.closest('tr');
 						const franchise = row.cells[2].innerText.trim();
 						if (!franchise) return;
-						fetch('/Records/GetByFranchise?id=' + encodeURIComponent(franchise))
-						.then(r => { if (!r.ok) throw new Error('Not found'); return r.json(); })
-						.then(data => {
-						const set = (sel, v) => { const el = document.querySelector(sel); if (el) el.value = v ?? ''; };
-						set('input[name="DateSubmitted"]', data.DateSubmitted || data.dateSubmitted);
-						set('input[name="NameOfOperator"]', data.NameOfOperator || data.nameOfOperator);
-						set('input[name="Address"]', data.Address || data.address);
-						set('input[name="Make"]', data.Make || data.make);
-						set('input[name="EngineNumber"]', data.EngineNumber || data.engineNumber);
-						set('input[name="Color"]', data.Color || data.color);
-						set('input[name="ChassisNumber"]', data.ChassisNumber || data.chassisNumber);
-						set('input[name="YearModel"]', data.YearModel || data.yearModel);
-						set('input[name="PlateNumber"]', data.PlateNumber || data.plateNumber);
-						set('input[name="TricycleFranchiseNumber"]', data.TricycleFranchiseNumber || data.tricycleFranchiseNumber);
-						set('input[name="MVFileNo"]', data.MVFileNo || data.mvFileNo);
-						set('input[name="TODA"]', data.TODA || data.toda);
-						set('input[name="RouteCovered"]', data.RouteCovered || data.routeCovered);
-						const ta1 = document.querySelector('textarea[name="Remarks"]'); if (ta1) ta1.value = data.Remarks || data.remarks || '';
-						const ta2 = document.querySelector('textarea[name="CommitteeReport"]'); if (ta2) ta2.value = data.CommitteeReport || data.committeeReport || '';
-						const selStatus = document.querySelector('select[name="Status"], select[asp-for="Status"]'); if (selStatus) selStatus.value = data.Status || data.status || '';
-						set('input[name="SBApprovedDate"]', data.SBApprovedDate || data.sBApprovedDate);
-						set('input[name="YearRenew"]', data.YearRenew || data.yearRenew);
-						set('input[name="YearExpired"]', data.YearExpired || data.yearExpired);
-						set('input[name="Typeofapplication"]', data.Typeofapplication || data.Typeofapplication);
-						})
-						.catch(err => { console.error(err); alert('Unable to load record'); });
+						if (btn.classList.contains('btn-edit')) {
+							window.location.href = '/Application/Edit?franchiseNumber=' + encodeURIComponent(franchise);
+						} else {
+							fetch('/Records/GetByFranchise?id=' + encodeURIComponent(franchise))
+							.then(r => { if (!r.ok) throw new Error('Not found'); return r.json(); })
+							.then(data => {
+								const set = (sel, v) => { const el = document.querySelector(sel); if (el) el.value = v ?? ''; };
+								set('input[name="DateSubmitted"]', data.DateSubmitted || '');
+								set('input[name="NameOfOperator"]', data.NameOfOperator || '');
+								set('input[name="ContactNo"]', data.ContactNo || '');
+								set('input[name="Address"]', data.Address || '');
+								set('input[name="CommunityTaxNo"]', data.CommunityTaxNo || '');
+								set('input[name="PlaceIssued"]', data.PlaceIssued || '');
+								set('input[name="Make"]', data.Make || '');
+								set('input[name="EngineNumber"]', data.EngineNumber || '');
+								set('input[name="Color"]', data.Color || '');
+								set('input[name="ChassisNumber"]', data.ChassisNumber || '');
+								set('input[name="YearModel"]', data.YearModel || '');
+								set('input[name="PlateNumber"]', data.PlateNumber || '');
+								set('input[name="TricycleFranchiseNumber"]', data.TricycleFranchiseNumber || '');
+								set('input[name="MVFileNo"]', data.MVFileNo || '');
+								set('input[name="TODA"]', data.TODA || '');
+								set('input[name="RouteCovered"]', data.RouteCovered || '');
+								const ta1 = document.querySelector('textarea[name="Remarks"]'); if (ta1) ta1.value = data.Remarks || '';
+								const ta2 = document.querySelector('textarea[name="CommitteeReport"]'); if (ta2) ta2.value = data.CommitteeReport || '';
+								set('select[name="Status"]', data.Status || '');
+								set('select[name="TypeOfOwnership"]', data.TypeOfOwnership || '');
+								set('select[name="TypeOfApplication"]', data.TypeOfApplication || '');
+								set('select[name="VerifiedBy"]', data.VerifiedBy || '');
+								set('input[name="SBApprovedDate"]', data.SBApprovedDate || '');
+								set('input[name="YearRenew"]', data.YearRenew || '');
+								set('input[name="YearExpired"]', data.YearExpired || '');
+							})
+							.catch(err => { console.error(err); alert('Unable to load record'); });
+						}
 						});
 
 						function setupFormClear(buttonId, formId, classTarget = 'clearable') {

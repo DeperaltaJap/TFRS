@@ -37,6 +37,11 @@
                     <div class="certificate-field"><label>ENGINE NUMBER:</label><output id="engineNumber"></output></div><div class="certificate-field"><label>REMARKS:</label><output id="remarks"></output></div>
                     <div class="certificate-field"><label>CHASSIS NUMBER:</label><output id="chassisNumber"></output></div><div class="certificate-field address-field"><label>ADDRESS:</label><output id="address"></output></div>
                     <div class="certificate-field"><label>PLATE NUMBER:</label><output id="plateNumber"></output></div><div class="certificate-field"><label>MAKE:</label><output id="make"></output></div>
+                    <div class="certificate-field"><label>CONTACT NO:</label><output id="contactNo"></output></div>
+                    <div class="certificate-field"><label>COMMUNITY TAX NO:</label><output id="communityTaxNo"></output></div>
+                    <div class="certificate-field"><label>PLACE ISSUED:</label><output id="placeIssued"></output></div>
+                    <div class="certificate-field"><label>TYPE OF OWNERSHIP:</label><output id="typeOfOwnership"></output></div>
+                    <div class="certificate-field"><label>VERIFIED BY:</label><output id="verifiedBy"></output></div>
                     <div class="year-boxes"><div><span>YEAR<br />RENEW</span><output id="yearRenew"></output></div><div><span>YEAR<br />EXPIRED:</span><output id="yearExpired"></output></div></div>
                     <div class="certificate-field route-field"><label>ROUTE COVERED:</label><output id="routeCovered"></output></div>
                     <div class="certificate-field committee-field"><label>COMMITTEE REPORT:</label><output id="committeeReport"></output></div><div class="certificate-field"><label>SB APPROVED DATE:</label><output id="sbApprovedDate"></output></div>
@@ -48,10 +53,10 @@
                     <div class="file-row"><strong>Files:</strong><output id="fileLocation">RECORDS FILES</output></div>
                 </div>
             </section>
-            <aside class="certificate-actions" aria-label="Record actions">
-                <button class="action-add" type="button">ADD<br />RECORD</button><button class="action-save" type="button">SAVE<br />RECORD</button><button class="action-duplicate" type="button">DUPLICATE<br />RECORD</button><button class="action-delete" type="button">Delete<br />Record</button>
-                <p>Design by:<br /><strong>The IT</strong></p><a asp-controller="Home" asp-action="Index">BACK</a>
-            </aside>
+<aside class="certificate-actions" aria-label="Record actions">
+                 <a class="action-add" asp-controller="Application" asp-action="Create">ADD<br />RECORD</a><button class="action-save" type="button">SAVE<br />RECORD</button><a class="action-duplicate" asp-controller="Application" asp-action="Edit">DUPLICATE<br />RECORD</a><button class="action-delete" type="button" id="cert-delete-btn">Delete<br />Record</button>
+                 <p>Design by:<br /><strong>The IT</strong></p><a asp-controller="Home" asp-action="Index">BACK</a>
+             </aside>
         </div>
         <section class="certificate-history">
             <h2>HISTORY</h2>
@@ -65,7 +70,7 @@
 <script>
 (() => {
     const records = @Html.Raw(recordsJson);
-    const fieldIds = { franchiseNo: 'TricycleFranchiseNumber', operatorName: 'NameOfOperator', dateIssued: 'DateIssued', dateExpired: 'DateExpired', yearModel: 'YearModel', toda: 'TODA', color: 'Color', status: 'Status', engineNumber: 'EngineNumber', remarks: 'Remarks', chassisNumber: 'ChassisNumber', address: 'Address', plateNumber: 'PlateNumber', make: 'Make', yearRenew: 'YearRenew', yearExpired: 'YearExpired', routeCovered: 'RouteCovered', committeeReport: 'CommitteeReport', sbApprovedDate: 'SBApprovedDate', mvFileNo: 'MVFileNo' };
+    const fieldIds = { franchiseNo: 'TricycleFranchiseNumber', operatorName: 'NameOfOperator', dateIssued: 'DateIssued', dateExpired: 'DateExpired', yearModel: 'YearModel', toda: 'TODA', color: 'Color', status: 'Status', engineNumber: 'EngineNumber', remarks: 'Remarks', chassisNumber: 'ChassisNumber', address: 'Address', plateNumber: 'PlateNumber', make: 'Make', yearRenew: 'YearRenew', yearExpired: 'YearExpired', routeCovered: 'RouteCovered', committeeReport: 'CommitteeReport', sbApprovedDate: 'SBApprovedDate', mvFileNo: 'MVFileNo', contactNo: 'ContactNo', communityTaxNo: 'CommunityTaxNo', placeIssued: 'PlaceIssued', typeOfOwnership: 'TypeOfOwnership', verifiedBy: 'VerifiedBy', typeOfApplication: 'TypeOfApplication' };
     const searchInput = document.getElementById('certificate-search-input');
     const emptyMessage = document.getElementById('certificate-empty');
     const historyBody = document.getElementById('history-table-body');
@@ -90,6 +95,13 @@
     searchInput.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); search(); } });
     historyFilter.addEventListener('input', event => renderHistory(event.target.value));
     historyBody.addEventListener('click', event => { const row = event.target.closest('tr[data-franchise]'); if (!row) return; const record = records.find(item => item.TricycleFranchiseNumber === row.dataset.franchise); searchInput.value = row.dataset.franchise; renderRecord(record); });
+    document.getElementById('cert-delete-btn').addEventListener('click', function() {
+        const franchise = document.getElementById('franchiseNo').textContent?.trim();
+        if (!franchise || !confirm('Delete franchise ' + franchise + '?')) return;
+        fetch('/Records/Delete', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'franchiseNumber=' + encodeURIComponent(franchise) })
+            .then(r => { if (r.ok) window.location.href = '/Franchise/Certificate'; alert('Deleted.'); })
+            .catch(err => { console.error(err); alert('Delete failed.'); });
+    });
     renderRecord(records[0]); renderHistory();
 })();
 </script>

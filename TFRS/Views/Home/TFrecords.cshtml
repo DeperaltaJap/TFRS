@@ -256,8 +256,12 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <button class="btn btn-sm btn-outline-primary">View</button>
-                                                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                                    <button class="btn btn-sm btn-outline-primary btn-record-view" data-franchise="@__r.TricycleFranchiseNumber">View</button>
+                                                    <a class="btn btn-sm btn-outline-secondary btn-record-edit" asp-controller="Application" asp-action="Edit" asp-route-franchiseNumber="@__r.TricycleFranchiseNumber">Edit</a>
+                                                    <form asp-controller="Records" asp-action="Delete" method="post" style="display:inline" onsubmit="return confirm('Delete franchise @__r.TricycleFranchiseNumber?');">
+                                                        <input type="hidden" name="franchiseNumber" value="@__r.TricycleFranchiseNumber" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>

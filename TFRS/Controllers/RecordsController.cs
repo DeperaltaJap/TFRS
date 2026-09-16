@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using TFRS.Models;
 
 namespace TFRS.Controllers
 {
@@ -15,15 +17,12 @@ namespace TFRS.Controllers
         {
             try
             {
-                var records = _mainTableService.GetAll();
-                ViewBag.MainRecords = records;
+                ViewBag.MainRecords = _mainTableService.GetAll();
             }
-            catch (Exception ex)
+            catch
             {
-                // log or handle
-                ViewBag.MainRecords = new List<TFRS.Models.MainTableRecord>();
+                ViewBag.MainRecords = new List<MainTableRecord>();
             }
-
             return View("~/Views/Home/TFrecords.cshtml");
         }
 
@@ -31,16 +30,52 @@ namespace TFRS.Controllers
         public IActionResult GetByFranchise(string id)
         {
             if (string.IsNullOrEmpty(id)) return BadRequest();
-
-            var svc = HttpContext.RequestServices.GetService(typeof(TFRS.Services.IMainTableService)) as TFRS.Services.IMainTableService;
-            if (svc == null) return StatusCode(500);
-
-            var r = svc.GetByFranchiseNumber(id);
+            var r = _mainTableService.GetByFranchiseNumber(id);
             if (r == null) return NotFound();
-
             return Json(r);
         }
 
+        [HttpGet]
+        public IActionResult Edit(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return BadRequest();
+            var record = _mainTableService.GetByFranchiseNumber(id);
+            if (record == null) return NotFound();
+            return View("~/Views/Home/Applicationpage.cshtml", record);
+        }
 
+        [HttpPost]
+        public IActionResult Edit(MainTableRecord model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _mainTableService.Update(model);
+                    return RedirectToAction("Index", "Records");
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "Unable to update record.");
+                }
+            }
+            return View("~/Views/Home/Applicationpage.cshtml", model);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(string franchiseNumber)
+        {
+            if (string.IsNullOrEmpty(franchiseNumber)) return BadRequest();
+            try
+            {
+                _mainTableService.Delete(franchiseNumber);
+                return RedirectToAction("Index", "Records");
+            }
+            catch
+            {
+                ModelState.AddModelError("", "Unable to delete record.");
+                return RedirectToAction("Index", "Records");
+            }
+        }
     }
 }
